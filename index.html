@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>❤️</title>
+<style>
+html,body{margin:0;padding:0;overflow:hidden;background:black;}
+canvas{position:absolute;}
+#text{
+  position:absolute;
+  top:40%;
+  width:100%;
+  text-align:center;
+  font-size:48px;
+  color:#ffb6c1;
+  font-family:"微软雅黑";
+  opacity:0;
+  transition:opacity 1s;
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="text"></div>
+
+<script>
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+function Firework(){
+  this.x=Math.random()*canvas.width;
+  this.y=canvas.height;
+  this.targetY=Math.random()*canvas.height/2;
+  this.color=`hsl(${Math.random()*360},100%,60%)`;
+  this.exploded=false;
+}
+Firework.prototype.update=function(){
+  this.y-=6;
+  if(this.y<=this.targetY && !this.exploded){
+    this.exploded=true;
+    for(let i=0;i<60;i++){
+      particles.push({
+        x:this.x,
+        y:this.y,
+        vx:Math.cos(i)*Math.random()*6,
+        vy:Math.sin(i)*Math.random()*6,
+        life:60,
+        color:this.color
+      });
+    }
+  }
+}
+
+let fireworks=[];
+
+function animate(){
+  ctx.fillStyle="rgba(0,0,0,0.2)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  if(Math.random()<0.05){
+    fireworks.push(new Firework());
+  }
+
+  fireworks.forEach(f=>f.update());
+
+  particles.forEach((p,i)=>{
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.life--;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fillStyle=p.color;
+    ctx.fill();
+    if(p.life<=0) particles.splice(i,1);
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+const text=document.getElementById("text");
+
+setTimeout(()=>{
+  text.innerText="嘉晗，我仍然好爱你！";
+  text.style.opacity=1;
+},1000);
+
+setTimeout(()=>{
+  text.style.opacity=0;
+},3000);
+
+setTimeout(()=>{
+  text.innerText="我们再来一次，好好相爱吧？";
+  text.style.opacity=1;
+},4000);
+</script>
+</body>
+</html>
